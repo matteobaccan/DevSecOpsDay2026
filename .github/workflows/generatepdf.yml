@@ -1,0 +1,35 @@
+name: Spec-Driven Development - Generate PDF
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '*.md'
+      - '.github/workflows/generatepdf.yml'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Generate pdf
+      run: |
+        cp 'presentation30min.md' 'presentation30min-backup.md'
+        sed -i "s/%date%/$(date +'%Y-%m-%d')/g" 'presentation30min.md'
+        sed -i "s/%time%/$(date +'%H:%M')/g" 'presentation30min.md'
+        npx @marp-team/marp-cli@latest 'presentation30min.md' --pdf --allow-local-files --pdf-outlines --pdf-outlines.pages=false
+        rm 'presentation30min.md'
+        mv 'presentation30min-backup.md' 'presentation30min.md'
+
+    - name: commit & push
+      run: |
+        git add -A
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add .
+        git commit -m "update slides"
+        git push
+
