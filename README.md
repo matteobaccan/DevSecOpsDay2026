@@ -22,7 +22,7 @@ Le slide sono disponibili in formato sorgente:
 1. **L'Era degli Agenti Autonomi e la Superficie d'Attacco AI** — Come gli LLM connessi ad API esterne espandono in modo incontrollato la sicurezza aziendale.
 2. **L'Evoluzione della Prompt Injection** — Da DAN (Direct Injection) agli attacchi indiretti (Indirect Injection) fino ai Worm AI e Memory Poisoning (MINJA & AgentPoison).
 3. **Il Problema Strutturale: Sintassi vs Dati** — L'assenza di compartimenti stagni nel Shared Context degli LLM, il Gap Semantico e l'illusione dei guardrail soft.
-4. **La Gravità degli Agenti: Azioni Reali & RCE** — Eccessiva agency e analisi di minacce reali come CVE-2024-5565 (Vanna.AI RCE) ed EchoLeak CVE-2025-32711 (esfiltrazione dati).
+4. **La Gravità degli Agenti: Azioni Reali & RCE** — Eccessiva agency e analisi di minacce reali: CVE-2024-5565 (Vanna.AI RCE), EchoLeak (CVE-2025-32711) e i recenti casi del 2026 come CVE-2026-26030 (Semantic Kernel RCE) e CVE-2026-42271 / CVE-2026-42208 (LiteLLM Command/SQL Injection).
 5. **Mitigazione Architetturale: I 6 Design Pattern Sicuri** — Action-Selector, Plan-Then-Execute, LLM Map-Reduce, Dual LLM Pattern, Code-Then-Execute, Context-Minimization.
 6. **La Difesa per Flusso Dati: Il Framework CaMeL** — Information Flow Control (IFC), capabilità crittografiche non falsificabili e runtime enforcer (Google/MIT).
 7. **Hardening Infrastrutturale DevSecOps** — AI Gateway (Prompt Shields), Action Sandboxing rigido (microVM AWS Firecracker / gVisor) e output schematizzato forzato (Pydantic).
@@ -61,9 +61,11 @@ npx @marp-team/marp-cli presentation30min.md --pdf
 - **Microsoft PyRIT:** [github.com/microsoft/pyrit](https://github.com/microsoft/pyrit)
 - **OWASP LLM Top 10 Project:** [owasp.org/www-project-top-10-for-large-language-model-applications/](https://owasp.org/www-project-top-10-for-large-language-model-applications/)
 - **NIST Inspect & AgentDojo:** Framework per valutare la sicurezza e la stabilità degli agenti.
-- **Vanna.AI RCE (CVE-2024-5565):** [nvd.nist.gov/vuln/detail/CVE-2024-5565](https://nvd.nist.gov/vuln/detail/CVE-2024-5565)
-- **EchoLeak (CVE-2025-32711):** Report di ricerca sull'esfiltrazione indiretta da Microsoft Copilot.
-- **EU AI Act Portal:** [artificialintelligenceact.eu](https://artificialintelligenceact.eu/)
+- Vanna.AI RCE (CVE-2024-5565): [nvd.nist.gov/vuln/detail/CVE-2024-5565](https://nvd.nist.gov/vuln/detail/CVE-2024-5565)
+- EchoLeak (CVE-2025-32711): Report di ricerca sull'esfiltrazione indiretta da Microsoft Copilot.
+- Semantic Kernel RCE (CVE-2026-26030): Arbitrary file write tramite tool exposure.
+- LiteLLM KEV Exploits (CVE-2026-42271 / CVE-2026-42208): Vulnerabilità in-the-wild su proxy di modelli linguistici.
+- EU AI Act Portal: [artificialintelligenceact.eu](https://artificialintelligenceact.eu/)
 
 ## Licenza
 
