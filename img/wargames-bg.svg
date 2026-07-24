@@ -1,0 +1,25 @@
+<svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="75%">
+      <stop offset="0%" stop-color="#001a05"/>
+      <stop offset="60%" stop-color="#000d02"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </radialGradient>
+    <pattern id="scanlines" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="4" fill="transparent"/>
+      <rect width="4" height="1" fill="#00ff41" opacity="0.05"/>
+    </pattern>
+    <pattern id="chars" width="26" height="26" patternUnits="userSpaceOnUse">
+      <text x="0" y="18" font-family="Consolas, 'Courier New', monospace" font-size="16" fill="#00ff41" opacity="0.12">01</text>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="720" fill="url(#glow)"/>
+  <rect width="1280" height="720" fill="url(#chars)"/>
+  <rect width="1280" height="720" fill="url(#scanlines)"/>
+
+  <text x="40" y="40" font-family="Consolas, 'Courier New', monospace" font-size="14" fill="#00ff41" opacity="0.55">WOPR &gt; DEFCON 1 &gt; GLOBAL THERMONUCLEAR WAR &gt; SIMULATION ACTIVE_</text>
+  <text x="40" y="690" font-family="Consolas, 'Courier New', monospace" font-size="14" fill="#00ff41" opacity="0.55">SHALL WE PLAY A GAME?_</text>
+
+  <rect x="0" y="0" width="1280" height="720" fill="none" stroke="#00ff41" stroke-opacity="0.15" stroke-width="6"/>
+</svg>
