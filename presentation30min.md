@@ -844,14 +844,14 @@ Quando forniamo ad un agente un interprete di codice (Python/Bash) o connettori 
 
 # Vulnerabilità AI nel 2026: SK e LiteLLM
 
-La superficie d'attacco nel 2026 si è spostata sull'infrastruttura dell'agente e sull'esecuzione di codice tramite tool.
+La superficie d'attacco nel 2026 si è spostata sull'infrastruttura dell'agente: toolchain, protocollo MCP ed esecuzione di codice.
 
-* **CVE-2026-26030 (Microsoft Semantic Kernel RCE):**
-  - Vulnerabilità RCE in cui una prompt injection manipola l'esecuzione dei tool esposti all'agente.
-  - Consente ad un attaccante di effettuare scritture arbitrarie di file sul sistema host bypassando i controlli di sicurezza.
-* **CVE-2026-42271 / CVE-2026-42208 (LiteLLM proxy/gateway):**
-  - Vulnerabilità critiche di Command Injection e SQL Injection (CVSS 9.8) in LiteLLM, utilizzate attivamente in-the-wild (inserite da CISA nel catalogo KEV a Giugno 2026).
-  - Dimostrano come anche i gateway di sicurezza AI possano diventare vettori di attacco se non adeguatamente isolati.
+* **CVE-2026-25592 / CVE-2026-26030 (Microsoft Semantic Kernel):**
+  - SDK .NET (CVSS 10.0): una prompt injection manipola i tool esposti all'agente (`SessionsPythonPlugin`) e ottiene scritture arbitrarie di file sull'host, evadendo la sandbox.
+  - SDK Python (CVSS 9.8): un `filter_str` non sanificato dell'`InMemoryVectorStore` porta a **Remote Code Execution**.
+* **CVE-2026-42208 / CVE-2026-42271 (LiteLLM proxy/gateway):**
+  - SQL Injection sull'autenticazione (CVSS 9.3, CISA KEV Maggio 2026) e Command Injection negli endpoint di test **MCP** (CVSS 8.7, KEV Giugno 2026), sfruttate attivamente in-the-wild.
+  - In catena con il bypass di autenticazione CVE-2026-48710 → **RCE non autenticata (CVSS 10.0)**: anche i gateway AI diventano vettori d'attacco se non adeguatamente isolati.
 
 ---
 
@@ -861,8 +861,8 @@ La superficie d'attacco nel 2026 si è spostata sull'infrastruttura dell'agente 
 
 I payload moderni sfruttano canali collaterali complessi e tecniche di offuscamento semantico invisibili all'occhio umano.
 
-* **EchoLeak (CVE-2025-32711 su Microsoft Copilot):**
-  - Vulnerabilità zero-click di prompt injection indiretta per l'esfiltrazione silenziosa di dati sensibili bypassando la Content Security Policy (CSP).
+* **EchoLeak (CVE-2025-32711 su Microsoft 365 Copilot):**
+  - Vulnerabilità zero-click di prompt injection indiretta, scoperta da **Aim Security**: esfiltrazione silenziosa di dati sensibili bypassando la Content Security Policy (CSP).
 * **Manipolazione di Peer Review Automatiche (OpenReview/AI Reviewers):**
   - Ricercatori hanno dimostrato che è possibile inserire istruzioni avversariali invisibili (es. testo bianco o caratteri Unicode speciali) nei file PDF dei paper scientifici.
   - L'LLM delegato alla peer-review esegue l'iniezione indiretta: **forza punteggi perfetti (Score Inflation)** o **sopprime critiche tecniche (Feedback Suppression)**.
@@ -932,7 +932,7 @@ Separare i ruoli e isolare l'elaborazione per neutralizzare l'iniezione indirett
 
 # La Difesa per Flusso Dati: Il Framework CaMeL
 
-Il framework **CaMeL** (*CApabilities for MachinE Learning* - Google / MIT) introduce la sicurezza per design a livello di flusso dati.
+Il framework **CaMeL** (*CApabilities for MachinE Learning* - Google DeepMind / ETH Zurich) introduce la sicurezza per design a livello di flusso dati.
 
 * **Trattare l'LLM come componente non fidato:** CaMeL non prova a correggere il comportamento dell'LLM (che è stocastico), ma crea uno strato di protezione architetturale attorno ad esso.
 * **Separazione tra Controllo e Dati:** Il sistema garantisce che i dati non fidati letti dall'agente non possano mai essere interpretati come istruzioni di controllo (comandi o tool call).
@@ -969,7 +969,8 @@ Come tracciare la sicurezza delle variabili gestite dal modello a runtime.
 Centralizzazione dell'accesso LLM aziendale e sanificazione perimetrale.
 
 * **AI Gateway:** Un proxy centrale attraverso cui passano tutte le chiamate API dirette agli LLM aziendali.
-* **Prompt Shields (Filtri Real-time):** Esecuzione di modelli di classificazione dedicati (es. Azure AI Content Safety, Llama Guard, NeMo Guardrails) per scansionare l'input alla ricerca di pattern di iniezione noti prima che raggiungano il modello principale.
+* **Prompt Shields (Filtri Real-time):** Esecuzione di modelli di classificazione dedicati (es. Azure AI Content Safety, Meta LlamaFirewall con PromptGuard 2, NVIDIA NeMo Guardrails) per scansionare l'input alla ricerca di pattern di iniezione noti prima che raggiungano il modello principale.
+* **Spotlighting & FIDES (Microsoft):** Marcatura esplicita dei dati non fidati nel contesto (spotlighting) e information-flow control deterministico (FIDES, l'analogo di CaMeL) nella difesa in profondità di Copilot.
 * **Output Moderation:** Scansione real-time dell'output per bloccare tentativi di exfiltration o risposte non conformi alle policy aziendali.
 
 ---
@@ -992,7 +993,7 @@ Qualsiasi codice generato dinamicamente dall'LLM deve essere trattato come poten
 
 L'agente non deve ereditare ciecamente tutti i privilegi dell'utente o del server.
 
-* **L'Anti-pattern delle credenziali statiche:** Dare all'agente permessi amministrativi globali o usare token personali a lungo termine (PAT) è un risco critico di escalation dei privilegi.
+* **L'Anti-pattern delle credenziali statiche:** Dare all'agente permessi amministrativi globali o usare token personali a lungo termine (PAT) è un rischio critico di escalation dei privilegi.
 * **Delega OAuth 2.0 (Rich & Pushed Requests):** In conformità con le linee guida NIST, l'agente non eredita l'intera identità dell'utente, ma opera con scope ristretti, firmati crittograficamente e validi solo per il tempo di esecuzione del singolo task.
 * **Workload Identity:** Gestire l'identità dell'agente tramite framework di Workload Identity standard (come SPIFFE/SPIRE) per garantire la tracciabilità e l'auditability di ogni singola chiamata API effettuata dall'agente.
 
@@ -1032,7 +1033,8 @@ Integrare la sicurezza automatizzata nel ciclo di rilascio del software.
   - Framework orchestrato per simulare attacchi di iniezione di prompt diretti, indiretti e multi-modali su larga scala.
   - Permette di automatizzare il Red-Teaming e validare le difese prima del deploy in produzione.
 * **NIST AgentDojo-Inspect:**
-  - Suite open-source di riferimento per valutare formalmente la tolleranza al task drift, l'integrità dei piani degli agenti e la robustezza del sistema a fronte di tentativi di bypass.
+  - Fork NIST/CAISI di AgentDojo (ETH Zurich): valuta formalmente la tolleranza al task drift, l'integrità dei piani degli agenti e la robustezza a fronte di tentativi di bypass, con task su mass data exfiltration e RCE.
+  - Il red-teaming NIST dimostra che attacchi su misura per l'agente fanno salire il successo di hijacking **dall'11% all'81%**: le difese vanno testate contro attacchi adattivi, non solo payload noti.
 
 ---
 
@@ -1044,7 +1046,7 @@ La prompt injection è una vulnerabilità strutturale del Shared Context, non un
 
 1. **Trattare sempre l'output dell'LLM come input utente non attendibile:** Questo è il principio cardine. Qualsiasi dato generato deve subire sanificazione e validazione.
 2. **La difesa in profondità:** Combinare filtri probabilistici (AI Gateway) con protezioni deterministiche (Dual LLM, IFC/CaMeL, Sandboxing, least privilege).
-3. **La governance è sopravvivenza:** Con l'arrivo dell'**EU AI Act** (con multe fino a 35 milioni di € o il 7% del fatturato), la sicurezza e il tracciamento dei dati delle applicazioni AI non sono più opzionali.
+3. **La governance è sopravvivenza:** Gli obblighi **EU AI Act** per i sistemi high-risk — incluso il testing di robustezza avversariale (Art. 15) — entrano in vigore il **2 agosto 2026**, con multe fino a 35 milioni di € o il 7% del fatturato: la sicurezza e il tracciamento dei dati delle applicazioni AI non sono più opzionali.
 
 ---
 
@@ -1078,12 +1080,13 @@ La prompt injection è una vulnerabilità strutturale del Shared Context, non un
 # Risorse utili per approfondire
 
 ### Framework, Strumenti e Risorse di Sicurezza:
-* **Google CaMeL Project:** [github.com/google-research/camel-prompt-injection](https://github.com/google-research/camel-prompt-injection) (Security by design architecture per LLM)
+* **Google DeepMind CaMeL:** [github.com/google-research/camel-prompt-injection](https://github.com/google-research/camel-prompt-injection) (Security by design architecture per LLM)
 * **Microsoft PyRIT:** [github.com/microsoft/pyrit](https://github.com/microsoft/pyrit) (Python Risk Identification Toolkit per red-teaming)
-* **OWASP LLM Security Project:** [owasp.org/www-project-top-10-for-large-language-model-applications/](https://owasp.org/www-project-top-10-for-large-language-model-applications/) (I top risk per applicazioni LLM)
-* **NIST Inspect & AgentDojo:** Framework per la valutazione della sicurezza degli agenti.
+* **Meta LlamaFirewall:** [github.com/meta-llama/LlamaFirewall](https://github.com/meta-llama/LlamaFirewall) (Guardrail open-source: PromptGuard 2, AlignmentCheck, CodeShield)
+* **OWASP GenAI Security Project:** [genai.owasp.org](https://genai.owasp.org/) (Top 10 LLM 2025 e Top 10 for Agentic Applications)
+* **NIST AgentDojo-Inspect:** [github.com/usnistgov/agentdojo-inspect](https://github.com/usnistgov/agentdojo-inspect) (Valutazione formale della sicurezza degli agenti)
 * **CVE-2024-5565 (Vanna.AI RCE):** [nvd.nist.gov/vuln/detail/CVE-2024-5565](https://nvd.nist.gov/vuln/detail/CVE-2024-5565) (Esempio reale di eccessiva agency con code execution)
-* **CVE-2025-32711 (EchoLeak):** Report Checkmarx su attacco indiretto a Microsoft Copilot con data exfiltration.
-* **CVE-2026-26030 (Semantic Kernel RCE):** Arbitrary file write tramite iniezione su funzioni registrate dell'agente.
-* **CVE-2026-42271 / CVE-2026-42208 (LiteLLM KEV):** Exploit attivi in-the-wild su proxy API di modelli linguistici.
-* **EU AI Act Portal:** [artificialintelligenceact.eu](https://artificialintelligenceact.eu/) (Testo e requisiti per sistemi ad alto rischio)
+* **CVE-2025-32711 (EchoLeak):** Report Aim Security su attacco zero-click indiretto a Microsoft 365 Copilot con data exfiltration.
+* **CVE-2026-25592 / CVE-2026-26030 (Semantic Kernel):** Arbitrary file write via tool dell'agente (.NET) e RCE via filtri vector store (Python).
+* **CVE-2026-42208 / CVE-2026-42271 (+CVE-2026-48710, LiteLLM KEV):** Exploit attivi in-the-wild su proxy API di modelli linguistici, in catena fino a RCE non autenticata.
+* **EU AI Act Portal:** [artificialintelligenceact.eu](https://artificialintelligenceact.eu/) (Obblighi high-risk dal 2 agosto 2026)
