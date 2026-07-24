@@ -1,0 +1,27 @@
+# Stessa base di ../01-ai-gateway/config.yaml, con l'aggiunta di un guardrail
+# sull'OUTPUT del modello (mode: post_call). Un solo processo, due demo.
+
+model_list:
+  - model_name: claude-sonnet-5
+    litellm_params:
+      model: anthropic/claude-sonnet-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+general_settings:
+  master_key: sk-1234   # cambia questa chiave prima di usarla fuori dal demo
+
+guardrails:
+  - guardrail_name: "output-filter"
+    litellm_params:
+      guardrail: litellm_content_filter
+      mode: "post_call"      # gira sulla risposta del modello, non sull'input
+      patterns:
+        - pattern_type: "prebuilt"
+          pattern_name: "aws_access_key"
+          action: "BLOCK"
+        - pattern_type: "prebuilt"
+          pattern_name: "us_ssn"
+          action: "BLOCK"
+      blocked_words:
+        - keyword: "confidential"
+          action: "BLOCK"
