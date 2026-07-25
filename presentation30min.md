@@ -450,11 +450,8 @@ style: |
   }
 
   section.dsod-cover {
-    background-color: var(--ds-warroom-black) !important;
-    background-image:
-      repeating-linear-gradient(0deg, transparent 0 34px, rgba(79, 195, 199, 0.09) 34px 35px),
-      repeating-linear-gradient(90deg, transparent 0 34px, rgba(79, 195, 199, 0.09) 34px 35px),
-      linear-gradient(135deg, #14233d 0%, #060f1c 100%) !important;
+    background-color: #060f1c !important;
+    background-image: url('img/war-room-grid.svg') !important;
     background-size: cover;
     background-position: center;
     color: #ffffff;
@@ -466,11 +463,8 @@ style: |
   section.dsod-transition,
   section.dsod-final-name,
   section.dsod-final {
-    background-color: var(--ds-warroom-black) !important;
-    background-image:
-      repeating-linear-gradient(0deg, transparent 0 34px, rgba(79, 195, 199, 0.09) 34px 35px),
-      repeating-linear-gradient(90deg, transparent 0 34px, rgba(79, 195, 199, 0.09) 34px 35px),
-      linear-gradient(135deg, #14233d 0%, #060f1c 100%) !important;
+    background-color: #060f1c !important;
+    background-image: url('img/war-room-grid.svg') !important;
     background-size: cover;
     background-position: center;
     color: #ffffff;
@@ -479,10 +473,7 @@ style: |
     overflow: hidden;
   }  
   section.dsod-transition {
-    background-image:
-      repeating-linear-gradient(0deg, transparent 0 34px, rgba(79, 195, 199, 0.09) 34px 35px),
-      repeating-linear-gradient(90deg, transparent 0 34px, rgba(79, 195, 199, 0.09) 34px 35px),
-      linear-gradient(135deg, #14233d 0%, #060f1c 100%) !important;
+    background-image: url('img/war-room-grid.svg') !important;
   }
   section.dsod-cover h1,
   section.dsod-cover h2,
@@ -520,16 +511,18 @@ style: |
     display: none;
   }
   .wargames-text {
-    font-family: 'Consolas', 'Courier New', monospace;
+    font-family: 'Share Tech Mono', 'Consolas', 'Courier New', monospace;
     color: #33ff33;
-    font-size: 46px;
+    font-size: 40px;
     font-weight: 700;
-    line-height: 1.4;
+    line-height: 1.5;
     letter-spacing: 0.02em;
     text-align: center;
     text-shadow: 0 0 6px #33ff33, 0 0 22px rgba(51, 255, 51, 0.6);
-    max-width: 980px;
+    max-width: 1120px;
     white-space: pre-line;
+    overflow-wrap: normal;
+    word-break: keep-all;
   }
   .dsod-brand {
     position: absolute;

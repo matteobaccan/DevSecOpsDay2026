@@ -1,0 +1,19 @@
+<svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="wrglow" cx="65%" cy="15%" r="85%">
+      <stop offset="0%" stop-color="#152a4d"/>
+      <stop offset="55%" stop-color="#0a1730"/>
+      <stop offset="100%" stop-color="#060f1c"/>
+    </radialGradient>
+    <pattern id="wrgrid" width="34" height="34" patternUnits="userSpaceOnUse">
+      <rect width="34" height="34" fill="transparent"/>
+      <rect width="34" height="1" fill="#4fc3c7" opacity="0.10"/>
+      <rect width="1" height="34" fill="#4fc3c7" opacity="0.10"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="720" fill="url(#wrglow)"/>
+  <rect width="1280" height="720" fill="url(#wrgrid)"/>
+
+  <rect x="0" y="0" width="1280" height="720" fill="none" stroke="#4fc3c7" stroke-opacity="0.16" stroke-width="4"/>
+</svg>
