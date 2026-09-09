@@ -25,9 +25,12 @@ Una giornata interamente dedicata alle pratiche e agli strumenti che rendono la 
 
 Una presentazione tecnica per sviluppatori, System Architects, Security Engineer e team DevSecOps su come progettare e proteggere sistemi complessi basati su agenti LLM a livello di piattaforma e infrastruttura IT.
 
-Le slide sono disponibili in due formati:
-- [presentation30min.md](presentation30min.md) — slide in formato sorgente **Marp** per la presentazione da 30 minuti.
-- [presentation30min.pdf](presentation30min.pdf) — export PDF pronto per la visualizzazione.
+Le slide sono disponibili in due versioni, entrambe in formato sorgente **Marp** con export PDF generato automaticamente dalla CI:
+
+| Versione | Sorgente | PDF | Note |
+| :--- | :--- | :--- | :--- |
+| **Integrale** | [presentation.md](presentation.md) | [presentation.pdf](presentation.pdf) | tutti i contenuti, casi reali e approfondimenti — pensata per la lettura dopo il talk |
+| **Talk (~30 min)** | [presentation30min.md](presentation30min.md) | [presentation30min.pdf](presentation30min.pdf) | il taglio per lo speech dal vivo: stesso filo narrativo, CVE riassunte in una pagina e pattern condensati |
 
 Nella cartella [demo/](demo/README.md) trovi le **demo dal vivo** che accompagnano la sezione di hardening del talk:
 1. **AI Gateway** — un proxy centrale (LiteLLM) davanti a Claude, con virtual key, rate-limit e guardrail.
@@ -63,8 +66,9 @@ Le slide sono scritte in formato [Marp](https://marp.app/). Per visualizzarle ed
 
 ```bash
 # Esegui con Marp CLI per generare l'HTML o il PDF
-npx @marp-team/marp-cli presentation30min.md --html
-npx @marp-team/marp-cli presentation30min.md --pdf
+# (versione integrale: presentation.md — versione talk da 30 minuti: presentation30min.md)
+npx @marp-team/marp-cli presentation.md --html
+npx @marp-team/marp-cli presentation.md --pdf
 
 # Oppure usa l'estensione VS Code
 # Installa "Marp for VS Code" e clicca sull'icona di anteprima in alto a destra
