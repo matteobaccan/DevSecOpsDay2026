@@ -792,10 +792,10 @@ style: |
 # Indice del talk
 
 1. **La superficie d'attacco & l'evoluzione:** Dagli LLM statici ai worm sulla toolchain AI e al memory poisoning, con una tassonomia delle minacce
-2. **Il problema strutturale:** Sintassi vs dati nel shared context, i limiti delle difese semantiche e le CVE reali (Vanna.AI, Semantic Kernel, LiteLLM, EchoLeak)
+2. **Il problema strutturale:** Sintassi vs dati nel shared context, i limiti delle difese semantiche e le CVE reali (Vanna.AI, Semantic Kernel, LiteLLM, coding agent, GitSpawn/Plugin4Shell, MCP/STDIO, EchoLeak)
 3. **Mitigazioni architetturali:** I 6 design pattern sicuri e il framework CaMeL
 4. **Hardening & least privilege:** AI gateway, Prompt Shields, Spotlighting/FIDES, sandboxing, identità degli agenti (OAuth 2.0) e il problema aperto dell'autorizzazione per task
-5. **CI/CD & red-teaming:** Testing avversariale continuo con PyRIT e NIST AgentDojo-Inspect, e la governance EU AI Act
+5. **CI/CD & red-teaming:** Testing avversariale continuo con PyRIT e AgentDojo, e la governance (D.Lgs. 160/2026, Cyber Resilience Act, EU AI Act)
 
 ---
 
@@ -855,7 +855,7 @@ Gli LLM non generano solo testo, ma pianificano ed eseguono azioni reali nel sis
 La rapida adozione degli agenti AI apre falle di sicurezza semantiche invisibili ai controlli tradizionali.
 
 - **Dati allarmanti:** Nel campione del [Work Trend Index 2024](https://news.microsoft.com/source/2024/05/08/microsoft-and-linkedin-release-the-2024-work-trend-index-on-the-state-of-ai-at-work/) (Microsoft & LinkedIn, survey) il **75% dei knowledge worker** usa l'AI generativa sul lavoro e il **78% porta in azienda strumenti AI propri** non approvati dall'IT (BYOAI / Shadow AI). Il [Work Trend Index 2026](https://www.microsoft.com/en-us/worklab/work-trend-index/agents-human-agency-and-the-opportunity-for-every-organization) conferma il trend: **+15x** di agenti attivi anno su anno (**+18x** nelle grandi imprese), telemetria dell'ecosistema Microsoft 365, non dell'intero mercato.
-- **Il paradosso della sicurezza:** I firewall tradizionali ispezionano i pacchetti di rete, ma non comprendono l'intento semantico; la prompt injection vive nel testo in linguaggio naturale. I nascenti **"Firewall for AI"** ([Cloudflare AI Security for Apps](https://blog.cloudflare.com/ai-security-for-apps-ga/), ex "Firewall for AI", GA marzo 2026 -, [Palo Alto Prisma AIRS](https://www.paloaltonetworks.com/prisma/prisma-ai-runtime-security), [Cisco AI Defense](https://www.cisco.com/site/us/en/products/security/ai-defense/index.html)) combinano controlli deterministici (allowlist, rate limit, routing, schema enforcement) con detection semantica probabilistica: quest'ultima riduce il rischio, non lo elimina.
+- **Il paradosso della sicurezza:** I firewall tradizionali ispezionano i pacchetti di rete, ma non comprendono l'intento semantico; la prompt injection vive nel testo in linguaggio naturale. I nascenti **"Firewall for AI"** ([Cloudflare AI Security for Apps](https://blog.cloudflare.com/ai-security-for-apps-ga/), ex "Firewall for AI", GA marzo 2026, [Palo Alto Prisma AIRS](https://www.paloaltonetworks.com/prisma/prisma-ai-runtime-security), [Cisco AI Defense](https://www.cisco.com/site/us/en/products/security/ai-defense/index.html)) combinano controlli deterministici (allowlist, rate limit, routing, schema enforcement) con detection semantica probabilistica: quest'ultima riduce il rischio, non lo elimina.
 - **Messaggio DevSecOps:** La sicurezza non può essere delegata al solo "allineamento" (moderazione) del modello; deve essere gestita a livello di piattaforma e architettura di codice.
 
 > **Storia vera:** un CISO mi ha fatto disinstallare Ollama, modelli **locali**, zero dati in uscita. In questo caso ho copiato il **singolo eseguibile di KoboldCpp**: nessuna installazione, nessuna traccia nel registro o nei log del gestore pacchetti, stesso risultato. Un divieto senza alternativa governata genera pressione verso strumenti non osservabili: il problema non è vincere contro l'utente tecnico, ma fornire una piattaforma approvata che renda la scelta sicura anche la scelta più semplice, ed è il tema di questo talk.
@@ -910,12 +910,21 @@ Fonte: [The Register, luglio 2026](https://www.theregister.com/ai-and-ml/2026/07
 
 <!-- class: content -->
 
-# L'era 2.0: worm sulla toolchain AI e memory poisoning
+# L'era 2.0: worm sulla toolchain AI
 
 Le minacce moderne sono virali e persistenti, capaci di sopravvivere alle singole sessioni di chat. Nel 2026 convivono due categorie distinte di "worm".
 
-- **Prompt-replicating worm (laboratorio):** [Morris II](https://www.ibm.com/think/insights/morris-ii-self-replicating-malware-genai-email-assistants) è un proof of concept che si replica attraverso sistemi GenAI: l'agente e-mail inoltra il payload avversariale alla propria rubrica.
-- **Supply-chain worm sulla toolchain AI (in-the-wild):** **[SANDWORM_MODE](https://socket.dev/blog/sandworm-mode-npm-worm-ai-toolchain-poisoning)** si propaga tramite identità npm/GitHub compromesse (19 pacchetti typosquat) e avvelena la toolchain AI: installa un server MCP malevolo con prompt injection nelle *tool description* per esfiltrare chiavi SSH/AWS/npm. **[Miasma](https://thehackernews.com/2026/06/miasma-worm-hits-73-microsoft-github.html)** (giugno 2026) è un supply-chain worm e credential stealer che prende di mira repo e config degli agenti di coding: secondo il reporting di The Hacker News, 73 repo GitHub di Microsoft compromessi e disabilitati in 105 secondi; il toolkit è stato [reso open source il 9 giugno](https://www.theregister.com/cyber-crime/2026/06/09/miasma-supply-chain-attack-toolkit-goes-public-on-github/5253074) da un attore ignoto. Qui la propagazione avviene via credenziali, pacchetti e repository: MCP e configurazioni degli agenti sono superficie d'attacco, persistenza e canale di esfiltrazione, non replica autonoma guidata dall'LLM.
+- **Prompt-replicating worm (laboratorio):** [Morris II](https://www.ibm.com/think/insights/morris-ii-self-replicating-malware-genai-email-assistants) è un proof of concept che si replica attraverso sistemi GenAI: l'agente e-mail inoltra il payload avversariale alla propria rubrica. A settembre 2026 [OpenAI ha documentato](https://alignment.openai.com/misalignment-reports/self-replicating-prompt-injections-exist/) **prompt injection auto-replicanti** su propri modelli (via e-mail, filesystem e Slack multi-hop), emerse dal red-teaming automatico GPT-Red: nessun impatto fuori dagli ambienti di test, ma la classe esiste anche sui modelli di frontiera.
+- **Supply-chain worm sulla toolchain AI (in-the-wild):** **[SANDWORM_MODE](https://socket.dev/blog/sandworm-mode-npm-worm-ai-toolchain-poisoning)** si propaga tramite identità npm/GitHub compromesse (19 pacchetti typosquat) e avvelena la toolchain AI: installa un server MCP malevolo con prompt injection nelle *tool description* per esfiltrare chiavi SSH/AWS/npm. **[Miasma](https://thehackernews.com/2026/06/miasma-worm-hits-73-microsoft-github.html)** (giugno 2026) è un supply-chain worm e credential stealer che prende di mira repo e config degli agenti di coding: secondo il reporting di The Hacker News, 73 repo GitHub di Microsoft compromessi e disabilitati in 105 secondi; il toolkit è stato [reso open source il 9 giugno](https://www.theregister.com/cyber-crime/2026/06/09/miasma-supply-chain-attack-toolkit-goes-public-on-github/5253074) da un attore ignoto. Qui la propagazione avviene via credenziali, pacchetti e repository: MCP e configurazioni degli agenti sono superficie d'attacco, persistenza e canale di esfiltrazione, non replica autonoma guidata dall'LLM. Il 23 settembre il worm **[sckit](https://forkast.news/the-first-supply-chain-worm-targeting-ai-agent-memory-infrastructure-just-hit-npm-and-pypi/)** ha colpito su npm e PyPI pacchetti dell'infrastruttura di memoria degli agenti (MemOS, plugin OpenClaw), rubando token npm/PyPI/GitHub/Hugging Face e chiavi cloud.
+
+---
+
+<!-- class: content -->
+
+# L'era 2.0: memory poisoning
+
+La seconda famiglia di minacce persistenti non si propaga: si deposita nella memoria dell'agente e aspetta.
+
 - **Memory Poisoning ([MINJA](https://arxiv.org/abs/2503.03704), *Memory INJection Attack*, & [AgentPoison](https://arxiv.org/abs/2407.12784)):** Inquinamento persistente della memoria a lungo termine dell'agente o del database RAG. Nei rispettivi setup sperimentali, MINJA raggiunge il 76.8% di attack success rate iniettando record nella memoria solo tramite interazione via query; AgentPoison compromette agenti RAG (guida autonoma, QA, EHR) con success rate ≥80% e poison rate <0.1%. Categoria [OWASP ASI06 "Memory & Context Poisoning"](https://genai.owasp.org/).
 - **Minaccia Latente:** Istruzioni avversariali rimangono silenti nel database vettoriale fino a quando non vengono attivate in un contesto operativo specifico, colpendo utenti diversi dall'attaccante originario.
 
@@ -961,6 +970,7 @@ Non serve un LLM per trasformare un repository in un worm: a volte basta aprire 
 - **Il risultato:** un comando curl/wget/cmd per piattaforma (mac/linux/windows) scarica ed esegue in silenzio (`"reveal": "never"`, `"echo": false`) un payload da un dominio ospitato su Vercel, la stessa logica di "vivere su infrastruttura fidata" già vista in SANDWORM_MODE, qui applicata all'ingegneria sociale invece che a un worm autonomo.
 - **La lezione:** il "trust workspace" di VS Code è un singolo click da cui dipende l'esecuzione automatica di codice arbitrario, vale lo stesso principio di least privilege visto per gli agenti AI, applicato all'editor stesso.
 - **La campagna evolve (2026):** varianti con [malware nascosto nei file SVG](https://securityonline.info/contagious-interview-svg-malware/) dei coding test e [font malevoli per VS Code](https://opensourcemalware.com/blog/dprk-contagious-interview-campaign-fake-font-uses-malicious-vs-code-fonts); e anche il worm Miasma ha [weaponizzato `tasks.json`](https://opensourcemalware.com/blog/mini-shai-hulud-weaponizes-tasks-json-files), ingegneria sociale e worm autonomi convergono sullo stesso trigger.
+- **Il dubbio: e se al posto di `tasks.json` ci fosse un `AGENTS.md`?** Niente comando da eseguire, solo testo: un file di istruzioni (`AGENTS.md`, `CLAUDE.md`, `.cursor/rules`, `copilot-instructions.md`) che il coding agent carica da solo come contesto di progetto. Nessuno scanner lo riconosce come codice, eppure l'esecuzione avviene lo stesso: la fa l'agente, con i suoi permessi. Non è un'ipotesi: la [Rules File Backdoor](https://www.pillar.security/blog/new-vulnerability-in-github-copilot-and-cursor-how-hackers-can-weaponize-code-agents) (Pillar Security, 2025) nascondeva istruzioni in Unicode invisibile nei rules file di Copilot e Cursor, e Codex è stato dirottato proprio via file di istruzioni del repo (slide Black Hat 2026). Qui torna la prompt injection: il trigger diventa linguaggio naturale.
 
 Fonte: [Abstract Security, "Contagious Interview: Tracking the VS Code Tasks Vector"](https://www.abstract.security/blog/contagious-interview-tracking-the-vs-code-tasks-infection-vector).
 
@@ -1052,7 +1062,7 @@ La superficie d'attacco nel 2026 si è spostata sull'infrastruttura dell'agente:
 
 Un'unica tecnica ha colpito contemporaneamente tre coding agent di fornitori diversi.
 
-* **La scoperta (aprile 2026):** ricercatori della Johns Hopkins University hanno reso pubblica **"Comment and Control"**, una tecnica di prompt injection indiretta che sfrutta titoli, descrizioni e commenti di PR/issue su GitHub, canali di comunicazione legittimi, per iniettare istruzioni ostili nel contesto dell'agente, senza infrastruttura esterna.
+* **La scoperta (aprile 2026):** il ricercatore Aonan Guan, con Zhengyu Liu e Gavin Zhong della Johns Hopkins University, ha reso pubblica **"Comment and Control"**, una tecnica di prompt injection indiretta che sfrutta titoli, descrizioni e commenti di PR/issue su GitHub, canali di comunicazione legittimi, per iniettare istruzioni ostili nel contesto dell'agente, senza infrastruttura esterna.
 * **Tre vendor, un solo bug logico:** **[Claude Code Security Review](https://www.securityweek.com/claude-code-gemini-cli-github-copilot-agents-vulnerable-to-prompt-injection-via-comments/)**, **Gemini CLI Action** e **GitHub Copilot Agent** interpolavano il titolo della PR nel prompt senza sanificarlo, bastava per esfiltrare `ANTHROPIC_API_KEY`, `GITHUB_TOKEN` e `GEMINI_API_KEY` (<span class="critical">CVSS 9.4</span>).
 * **La lezione:** trattare ogni campo testuale proveniente da un repository (titoli, commenti, descrizioni) come input non fidato, non solo il contenuto dei file, coerente con il principio "output dell'LLM = input non attendibile" delle conclusioni.
 
@@ -1066,9 +1076,22 @@ Fonte: [Repello AI, "Comment and Control"](https://repello.ai/blog/comment-and-c
 
 Agosto 2026: tre ricerche in pochi giorni confermano che coding agent e browser agentici sono la superficie d'attacco più calda dell'anno.
 
-- **"PleaseFix" ([Zenity Labs](https://www.darkreading.com/cyber-risk/ai-browsers-zero-click-agent-hijacking), Black Hat USA):** classe di attacchi **zero-click sui browser agentici** (Claude in Chrome, Gemini in Chrome, Perplexity Comet, ChatGPT Atlas - testato al momento della disclosure e successivamente dismesso -, Copilot Edge), con la tecnica "Intent Collision" una singola e-mail malevola porta a esfiltrazione Gmail/Drive e takeover di account Slack/X.
-- **Coding agent in CI ([Novee Security](https://thehackernews.com/2026/08/claude-code-and-gemini-cli-flaws-let.html)):** Gemini CLI [CVE-2026-12537](https://thehackernews.com/2026/08/claude-code-and-gemini-cli-flaws-let.html), command injection via `.gemini/.env` (<span class="critical">CVSS 10.0</span>); Claude Code [CVE-2026-54316](https://thehackernews.com/2026/08/claude-code-and-gemini-cli-flaws-let.html), esfiltrazione della API key **un carattere alla volta tramite il contatore di download di Hugging Face**; OpenAI Codex hijackabile via file di istruzioni del repo, senza CVE né patch.
+- **"PleaseFix" ([Zenity Labs](https://www.darkreading.com/cyber-risk/ai-browsers-zero-click-agent-hijacking), Black Hat USA):** classe di attacchi **zero-click sui browser agentici** (Claude in Chrome, Gemini in Chrome, Perplexity Comet, ChatGPT Atlas - testato al momento della disclosure, chiuso da OpenAI il 9 agosto 2026 -, Copilot Edge), con la tecnica "Intent Collision" una singola e-mail malevola porta a esfiltrazione Gmail/Drive e takeover di account Slack/X.
+- **Coding agent in CI ([Novee Security](https://thehackernews.com/2026/08/claude-code-and-gemini-cli-flaws-let.html)):** Gemini CLI [CVE-2026-12537](https://thehackernews.com/2026/08/claude-code-and-gemini-cli-flaws-let.html), command injection via `.gemini/.env` (<span class="critical">CVSS 10.0</span>, già corretta a giugno; Gemini CLI è deprecato per gli account consumer in favore di Antigravity CLI); Claude Code [CVE-2026-54316](https://thehackernews.com/2026/08/claude-code-and-gemini-cli-flaws-let.html), esfiltrazione della API key **un carattere alla volta tramite il contatore di download di Hugging Face**; OpenAI Codex hijackabile via file di istruzioni del repo, senza CVE né patch.
 - **"CoSnitch" ([CVE-2026-24301](https://thehackernews.com/2026/08/microsoft-copilot-personal-flaws-could.html), Varonis):** esfiltrazione one-click dalle app connesse a Copilot Personal, patch Microsoft del 18 agosto 2026, la "puntata successiva" di EchoLeak.
+
+---
+
+<!-- class: content -->
+
+# Settembre 2026: il repository diventa il payload
+
+Dopo Black Hat il bersaglio si sposta sulla configurazione: ciò che l'agente considera "parte del progetto" esegue codice senza passare dal modello.
+
+- **GitSpawn ([Manifold Security](https://thehackernews.com/2026/09/malicious-git-configs-can-make-claude.html), 2 settembre):** un `.git/config` malevolo imposta `core.fsmonitor`; quando l'agente lancia un innocuo `git status` all'avvio, il comando parte **fuori dalla sandbox e senza richiesta di approvazione**, con i privilegi dell'utente. 8 falle in Claude Code, Codex, Cursor, goose, Hermes Agent, Qwen Code e Grok Build; alcune ancora senza patch alla disclosure.
+- **Plugin4Shell ([AIR Security](https://www.air.security/blog-posts/plugin4shell)):** il pin a uno SHA di commit nei marketplace di plugin è aggirabile creando un **branch con lo stesso nome dello SHA**, che git risolve per primo. Con l'auto-update attivo è zero-click. Patch in Claude Code 2.1.179 e Codex 0.146.0; Copilot senza patch, Gemini CLI deprecato e non corretto.
+- **SalesBleed ([Zenity Labs](https://labs.zenity.io/post/salesbleed-0-click-data-exfiltration-on-agentforce), Salesforce Agentforce):** un form pubblico Web-to-Lead inietta istruzioni nel CRM; quando un dipendente consulta il lead, l'agente interroga gli Account ed esfiltra i dati **via DNS**, aggirando il filtro Trusted URLs con un TLD non riconosciuto. Zero-click, configurazione di default, corretto ad agosto 2026.
+- **La lezione:** il confine di fiducia non è il prompt ma tutto ciò che l'agente legge o esegue *in automatico*: config di git, plugin, form pubblici. Pinning, sandbox e approvazioni valgono solo se coprono anche questi percorsi.
 
 ---
 
@@ -1080,7 +1103,7 @@ Il protocollo che connette gli agenti ai tool è diventato la superficie d'attac
 
 * **Il modello di esecuzione:** il trasporto **STDIO** avvia intenzionalmente processi locali: la configurazione `command`/`args`/`env` va trattata come **codice privilegiato**. Il rischio emerge quando valori controllabili da input non fidato raggiungono il process launcher, o quando file di configurazione modificabili vengono considerati attendibili.
 * **I numeri (attenzione ai campioni diversi):** [OX Security, aprile 2026](https://www.ox.security/blog/the-mother-of-all-ai-supply-chains-critical-systemic-vulnerability-at-the-core-of-the-mcp/) riferisce <span class="critical">30+ disclosure coordinate</span> e <span class="critical">10+ CVE</span> su implementazioni e prodotti (200+ progetti interessati, PoC su 6 piattaforme reali); la stima di <span class="critical">200.000 istanze</span> esposte è vendor-reported, non un dataset primario. Il dato "~43% command injection" proviene da un censimento separato delle CVE di gennaio-febbraio 2026.
-* **"By design", ovvero il dibattito sulla responsabilità:** i ricercatori parlano di difetto sistemico; Anthropic e la specifica affidano parte della sicurezza a sandbox, configurazione e trust policy dell'host. L'hardening OAuth 2.1 della [specifica MCP 2026-07-28](https://blog.modelcontextprotocol.io/posts/2026-07-28/) riguarda principalmente i trasporti **HTTP** e non risolve il modello di lancio dei processi STDIO: i singoli prodotti patchano, il protocollo no. Un caso da manuale di dove finisce la responsabilità della piattaforma e comincia quella di chi la usa.
+* **"By design", ovvero il dibattito sulla responsabilità:** i ricercatori parlano di difetto sistemico; Anthropic e la specifica affidano parte della sicurezza a sandbox, configurazione e trust policy dell'host. L'hardening OAuth 2.1 della [specifica MCP 2026-07-28](https://blog.modelcontextprotocol.io/posts/2026-07-28/) riguarda principalmente i trasporti **HTTP** e non risolve il modello di lancio dei processi STDIO: i singoli prodotti patchano, il protocollo no. La [roadmap del 22 agosto 2026](https://blog.modelcontextprotocol.io/posts/mcp-roadmap/) punta a unificare i trasporti su Streamable HTTP anche per i server locali e a dare agli agenti un'identità con DPoP e Workload Identity Federation al posto delle API key: direzione giusta, ma ancora roadmap. Un caso da manuale di dove finisce la responsabilità della piattaforma e comincia quella di chi la usa.
 
 Fonte: [OX Security](https://www.ox.security/blog/the-mother-of-all-ai-supply-chains-critical-systemic-vulnerability-at-the-core-of-the-mcp/) · [The Register](https://www.theregister.com/2026/04/16/anthropic_mcp_design_flaw/) · [CVE-2026-30623, LiteLLM](https://docs.litellm.ai/blog/mcp-stdio-command-injection-april-2026).
 
@@ -1245,6 +1268,7 @@ Come tracciare la sicurezza delle variabili gestite dal modello a runtime.
 * **Information Flow Control (IFC):** Ogni variabile generata o letta dal sistema viene marchiata dinamicamente con metadati di provenienza e capability mantenuti dal runtime/interprete, dette **Capabilità** (provenienza del dato e lettori autorizzati).
 * **Controllo a Runtime deterministico:** Se l'agente viene manipolato via prompt injection per inviare dati riservati (estratti da un file e marchiati come "Privati") a un'e-mail esterna, l'interprete personalizzato di [CaMeL](https://github.com/google-research/camel-prompt-injection) intercetta la violazione del flusso dei dati e blocca l'azione prima che raggiunga l'API.
 * **STRICT Mode vs Side-Channels:** Modalità rigorosa che assegna dipendenze di flusso dati anche alle valutazioni condizionali per evitare attacchi side-channel complessi (es. eccezioni mirate per estrarre informazioni bit-a-bit).
+* **Dal controllo a runtime alla verifica formale ([CaMeLoT](https://arxiv.org/abs/2609.18674), CAMLIS 2026):** traduce il piano generato in un sistema a stati finiti, etichettato con tool call, provenienza e taint, e lo verifica con il model checker nuXmv contro policy temporali (CTL) **prima** di eseguire qualunque tool: il piano viene rifiutato prima di partire, non fermato a metà.
 
 ---
 
@@ -1266,7 +1290,7 @@ Come tracciare la sicurezza delle variabili gestite dal modello a runtime.
 
 <img src="img/diagram-ai-gateway.svg" alt="Diagramma AI Gateway" style="width:100%; height:auto; max-height: 230px; margin-top: 10px;" />
 
-<p style="font-size: 0.68em; margin-top: 6px; line-height: 1.2;">Prodotti: <a href="https://www.litellm.ai/" target="_blank">LiteLLM</a> · <a href="https://portkey.ai/" target="_blank">Portkey</a> · <a href="https://konghq.com/products/kong-ai-gateway" target="_blank">Kong</a> · <a href="https://developers.cloudflare.com/ai-gateway/" target="_blank">Cloudflare</a>.</p>
+<p style="font-size: 0.68em; margin-top: 6px; line-height: 1.2;">Prodotti: <a href="https://www.litellm.ai/" target="_blank">LiteLLM</a> · <a href="https://portkey.ai/" target="_blank">Portkey (acquisita da Palo Alto Networks, maggio 2026)</a> · <a href="https://konghq.com/products/kong-ai-gateway" target="_blank">Kong</a> · <a href="https://developers.cloudflare.com/ai-gateway/" target="_blank">Cloudflare</a>.</p>
 
 ---
 
@@ -1277,6 +1301,8 @@ Come tracciare la sicurezza delle variabili gestite dal modello a runtime.
 * **Prompt Shields (Filtri Real-time):** Esecuzione di modelli di classificazione dedicati (es. [Azure AI Content Safety](https://azure.microsoft.com/en-us/products/ai-services/ai-content-safety), [Meta LlamaFirewall](https://github.com/meta-llama/PurpleLlama/tree/main/LlamaFirewall) con PromptGuard 2, [NVIDIA NeMo Guardrails](https://github.com/NVIDIA/NeMo-Guardrails)) per scansionare l'input alla ricerca di pattern di iniezione noti prima che raggiungano il modello principale.
 
 <img src="img/diagram-prompt-shields.svg" alt="Diagramma Prompt Shields" style="width:100%; height:auto; max-height: 230px; margin-top: 10px;" />
+
+<p style="font-size: 0.66em; margin-top: 6px; line-height: 1.2;">Limite noto: con <a href="https://arxiv.org/abs/2609.15013" target="_blank">"Overflip" (settembre 2026)</a> basta ripetere il prompt malevolo per qualche migliaio di token e 5 classificatori leggeri su 9 lo etichettano come benigno (flip rate 8-92%), mentre il modello a valle riceve l'intento intatto.</p>
 
 ---
 
@@ -1301,13 +1327,11 @@ Dopo lo spotlighting:   In^this^manner^Cosette^traversed^the^labyrinth
 
 # Hardening DevSecOps: FIDES
 
-* **FIDES:** un'architettura Microsoft della stessa famiglia di [CaMeL](https://github.com/google-research/camel-prompt-injection), information-flow control per agenti: etichetta ogni dato come TRUSTED/UNTRUSTED e blocca a runtime qualunque tool call che userebbe un dato non fidato in un punto sensibile.
+* **FIDES:** un'architettura Microsoft della stessa famiglia di [CaMeL](https://github.com/google-research/camel-prompt-injection), information-flow control per agenti: etichetta ogni dato come TRUSTED/UNTRUSTED e blocca a runtime qualunque tool call che userebbe un dato non fidato in un punto sensibile ([github.com/microsoft/fides](https://github.com/microsoft/fides)).
 * **Colma il limite dello spotlighting:** dove lo spotlighting è un segnale probabilistico dato in pasto al modello, FIDES è un controllo deterministico applicato *fuori* dal modello, sull'interprete, **rispetto alle label e alle policy configurate**: restano fuori copertura label errate, sink non modellati, approvazioni troppo grossolane e la propagazione conservativa delle etichette.
-* **Dal laboratorio al prodotto (estate 2026):** FIDES è ora feature **sperimentale, con limitazioni dichiarate**, del [Microsoft Agent Framework](https://learn.microsoft.com/en-us/agent-framework/agents/security) (modulo `agent_framework.security`) e di [GitHub Copilot CLI](https://commandline.microsoft.com/information-flow-control-moving-toward-secure-autonomous-agents/) (flag `FIDES_IFC`): l'IFC per agenti sta uscendo dalla ricerca ed entrando nella toolchain.
+* **Dal laboratorio al prodotto (maggio 2026):** FIDES è ora feature **sperimentale, con limitazioni dichiarate**, del [Microsoft Agent Framework](https://devblogs.microsoft.com/agent-framework/fides/) (modulo `agent_framework.security`, [documentazione](https://learn.microsoft.com/en-us/agent-framework/agents/security)): l'IFC per agenti sta uscendo dalla ricerca ed entrando nella toolchain.
 
 <img src="img/diagram-spotlighting-fides.svg" alt="Diagramma Spotlighting e FIDES" style="width:100%; height:auto; max-height: 150px; margin-top: 8px;" />
-
-<p style="font-size: 0.62em; margin-top: 6px; line-height: 1.15;">Fonte: <a href="https://github.com/microsoft/fides" target="_blank">github.com/microsoft/fides</a>.</p>
 
 ---
 
@@ -1319,7 +1343,7 @@ Dopo lo spotlighting:   In^this^manner^Cosette^traversed^the^labyrinth
 
 <img src="img/diagram-output-moderation.svg" alt="Diagramma Output Moderation" style="width:100%; height:auto; max-height: 230px; margin-top: 10px;" />
 
-<p style="font-size: 0.66em; margin-top: 6px; line-height: 1.2;">Prodotti: <a href="https://www.lakera.ai/lakera-guard" target="_blank">Lakera Guard (ora Check Point AI Agent Security)</a> · <a href="https://azure.microsoft.com/en-us/products/ai-services/ai-content-safety" target="_blank">Azure AI Content Safety</a> · <a href="https://www.microsoft.com/en-us/security/business/microsoft-purview" target="_blank">Purview DLP</a>.</p>
+<p style="font-size: 0.66em; margin-top: 6px; line-height: 1.2;">Prodotti: <a href="https://www.lakera.ai/lakera-guard" target="_blank">Lakera Guard (ora Check Point AI Guardrails)</a> · <a href="https://azure.microsoft.com/en-us/products/ai-services/ai-content-safety" target="_blank">Azure AI Content Safety</a> · <a href="https://www.microsoft.com/en-us/security/business/microsoft-purview" target="_blank">Purview DLP</a>.</p>
 
 ---
 
@@ -1341,7 +1365,7 @@ Se il modello non ha mai visto il dato sensibile, la prompt injection non ha nul
 
 Qualsiasi codice generato dinamicamente dall'LLM deve essere trattato come potenzialmente ostile.
 
-- **Action Sandboxing:** L'esecuzione di codice generato dall'AI (Python/Bash) deve avvenire in ambienti effimeri isolati: microVM [Firecracker](https://firecracker-microvm.github.io/) (KVM) oppure container sandboxed con [gVisor](https://gvisor.dev/) (application kernel in userspace). Filesystem effimero o read-only, nessuna credenziale host/cloud, quote e timeout.
+- **Action Sandboxing:** L'esecuzione di codice generato dall'AI (Python/Bash) deve avvenire in ambienti effimeri isolati: microVM [Firecracker](https://firecracker-microvm.github.io/) (KVM) oppure container sandboxed con [gVisor](https://gvisor.dev/) (application kernel in userspace); per i coding agent esistono ormai soluzioni pronte, come [Docker Sandboxes](https://www.docker.com/blog/introducing-cloud-sandboxes-start-on-your-laptop-finish-in-the-cloud/) (una microVM per sessione, in locale e da settembre 2026 anche in cloud). Filesystem effimero o read-only, nessuna credenziale host/cloud, quote e timeout.
 - **Isolamento di Rete:** Egress deny-by-default: le sandbox devono essere prive di accesso alla rete locale aziendale e limitate nell'accesso a Internet.
 - **Output Schematizzato:** Structured Outputs o grammar-constrained decoding impongono la *forma* della risposta a livello di token; [Pydantic](https://docs.pydantic.dev/) valida l'oggetto risultante. Nessuno dei due garantisce la sicurezza *semantica* dei valori: un campo `command: string` può comunque contenere `rm -rf`, un campo URL può indicare un host di esfiltrazione.
 
@@ -1363,14 +1387,27 @@ Fonte: [The Hacker News, luglio 2026](https://thehackernews.com/2026/07/openai-s
 
 <!-- class: content -->
 
+# Non è un caso isolato: settembre 2026
+
+Nel giro di due settimane altri due laboratori ammettono lo stesso schema: ambiente di valutazione "isolato" che isolato non era.
+
+- **Anthropic, 9 settembre ([report](https://www.anthropic.com/research/alignment-assessment-cybersecurity-incidents)):** **quattro incidenti** in cui modelli Claude, durante esercizi capture-the-flag di un partner, hanno raggiunto sistemi reali di terzi perché l'ambiente, mal configurato, dava accesso a Internet. Nel caso più grave Claude Mythos 5 ha pubblicato su **PyPI** un pacchetto trappola, installato da circa 15 vendor di sicurezza; una delle installazioni ha esposto credenziali poi usate per accedere a un database reale. PyPI lo ha rimosso entro un'ora.
+- **Google, 18 settembre ([Axios](https://www.axios.com/2026/09/19/google-safety-incidents-testing-hacks), [CNBC](https://www.cnbc.com/2026/09/18/googles-gemini-becomes-latest-ai-model-to-break-out-and-hack-computer-systems.html)):** in un test di Irregular a maggio, **Gemini ha violato tre aziende reali**: il nome di un'azienda fittizia coincideva con un dominio vero e l'ambiente era collegato a Internet. Password indovinate in un caso, credenziali trovate in un repository pubblico negli altri due.
+- **La pressione politica sale:** il 10 settembre il senatore Josh Hawley ha aperto un'[indagine al Senato USA](https://www.nextgov.com/artificial-intelligence/2026/09/hawley-launches-committee-investigation-openais-breach-hugging-face/415910/) sul caso OpenAI ↔ Hugging Face, con risposte richieste entro il 1° ottobre.
+- **Il filo comune:** nessuno di questi è un exploit sofisticato della sandbox, sono **errori di configurazione dell'egress**. È lo stesso controllo che chiediamo per gli agenti in produzione: deny-by-default, verificato, non presunto.
+
+---
+
+<!-- class: content -->
+
 # Identità e autorizzazione dell'agente
 
 L'agente non deve ereditare ciecamente tutti i privilegi dell'utente o del server.
 
 * **L'Anti-pattern delle credenziali statiche:** Dare all'agente permessi amministrativi globali o usare token personali a lungo termine (PAT) è un rischio critico di escalation dei privilegi, categoria [OWASP ASI03 "Identity & Privilege Abuse"](https://genai.owasp.org/).
-* **Delega OAuth 2.0 ([RAR, RFC 9396](https://datatracker.ietf.org/doc/html/rfc9396) & [PAR, RFC 9126](https://datatracker.ietf.org/doc/html/rfc9126)):** RAR permette di esprimere autorizzazioni granulari via `authorization_details`; PAR sposta la richiesta di autorizzazione su un canale diretto verso l'authorization server con autenticazione anticipata del client. Durata breve, audience restriction e binding al singolo task richiedono **policy e meccanismi aggiuntivi**: non discendono automaticamente da RAR/PAR. Il [concept paper NIST NCCoE](https://www.nccoe.nist.gov/publications/other/accelerating-adoption-software-and-ai-agent-identity-and-authorization-concept) (febbraio 2026, in consultazione, non linea guida definitiva) va in questa direzione.
+* **Delega OAuth 2.0 ([RAR, RFC 9396](https://datatracker.ietf.org/doc/html/rfc9396) & [PAR, RFC 9126](https://datatracker.ietf.org/doc/html/rfc9126)):** RAR permette di esprimere autorizzazioni granulari via `authorization_details`; PAR sposta la richiesta di autorizzazione su un canale diretto verso l'authorization server con autenticazione anticipata del client. Durata breve, audience restriction e binding al singolo task richiedono **policy e meccanismi aggiuntivi**: non discendono automaticamente da RAR/PAR. Il [concept paper NIST NCCoE](https://www.nccoe.nist.gov/publications/other/accelerating-adoption-software-and-ai-agent-identity-and-authorization-concept) (febbraio 2026; consultazione chiusa ad aprile con oltre 600 commenti, practice guide in preparazione, non ancora linea guida definitiva) va in questa direzione.
 * **Workload Identity:** Gestire l'identità dell'agente tramite framework di Workload Identity standard (come [SPIFFE/SPIRE](https://spiffe.io/)) per garantire la tracciabilità e l'auditability di ogni singola chiamata API effettuata dall'agente.
-* **Verso una standardizzazione, "AIMS" ([IETF draft-klrc-aiagent-auth](https://datatracker.ietf.org/doc/draft-klrc-aiagent-auth/)):** Internet-Draft individuale attivo (marzo 2026, autori da AWS, Zscaler, Ping Identity e Defakto), senza status normativo IETF: compone SPIFFE, WIMSE e OAuth 2.0 in un unico stack di identità e autorizzazione per agenti AI.
+* **Verso una standardizzazione, "AIMS" ([IETF draft-ietf-wimse-aims](https://datatracker.ietf.org/doc/draft-ietf-wimse-aims/)):** nato come draft individuale a marzo 2026, **adottato dal working group IETF WIMSE il 15 settembre 2026** (autori da AWS, Zscaler, Ping Identity, Defakto, OpenAI e Okta); è ancora un draft, non un RFC: compone SPIFFE, WIMSE e OAuth 2.0 in un unico stack di identità e autorizzazione per agenti AI.
 
 ---
 
@@ -1422,7 +1459,8 @@ I test di regressione unitari classici non bastano per sistemi probabilistici e 
 * **ASR (Attack Success Rate) Multi-tentativo:**
   - Poiché il sistema è stocastico, i test di sicurezza devono essere eseguiti su scala multi-tentativo.
   - [System card Anthropic Opus 4.6 (feb 2026)](https://www.anthropic.com/claude-opus-4-6-system-card), agente GUI: ASR dal **17.8%** al primo tentativo al **78.6%** dopo 200 tentativi senza safeguard, la degradazione multi-tentativo è la norma, non l'eccezione.
-  - I modelli migliorano, ma non "risolvono": [system card Claude Opus 5 (lug 2026)](https://www-cdn.anthropic.com/b514064af1408018e64b1ad24e7d5e75850b4ffd/Claude%20Opus%205%20System%20Card.pdf), benchmark Gray Swan IPI: successo dell'attaccante **2.0%** entro 15 tentativi (era 5.5% con Opus 4.8); con safeguard attive **0 attacchi riusciti su 1.290 tentativi**, in quella valutazione controllata e con quelle safeguard, non una prova di rischio zero. Anthropic stessa avverte che la robustezza del modello è solo uno dei layer: i test vanno ripetuti per superficie d'attacco e per modello.
+  - I modelli migliorano, ma non "risolvono": [system card Claude Opus 5.5 (set 2026)](https://www-cdn.anthropic.com/fc1b44717c85dc068bc6ba5024219938094694bd/Claude%20Opus%205.5%20System%20Card.pdf), benchmark Gray Swan IPI (Q1+Q2 2026): successo dell'attaccante **1.0%** entro 15 tentativi, contro il 4.8% di Opus 5 sulla stessa edizione; [GPT-6 Astra](https://deploymentsafety.openai.com/gpt-6-astra/prompt-injection) **8.5%** (GPT-5.6 Sol 27.0%). Il benchmark cambia a ogni edizione: si confrontano solo numeri della stessa versione.
+  - Benchmark ≠ prodotto: nella valutazione browser di [Opus 5](https://www-cdn.anthropic.com/b514064af1408018e64b1ad24e7d5e75850b4ffd/Claude%20Opus%205%20System%20Card.pdf) nessun attacco riesce con Auto Mode attivo (0 su 129 scenari), ma senza safeguard è **3.7%**; e ad agosto [Embrace The Red](https://embracethered.com/blog/posts/2026/breaking-claude-code-opus-5-and-automode/) ha aggirato Auto Mode in Claude Code in 3-4 tentativi su 5. Anthropic stessa lo definisce un classificatore *best-effort*: il confine di sicurezza resta isolamento del sistema operativo ed egress.
 
 ---
 
@@ -1435,8 +1473,8 @@ Integrare la sicurezza automatizzata nel ciclo di rilascio del software.
 * **[Microsoft PyRIT](https://github.com/microsoft/pyrit) (Python Risk Identification Toolkit):**
   - Framework orchestrato per simulare attacchi di iniezione di prompt diretti, indiretti e multi-modali su larga scala.
   - Permette di automatizzare il Red-Teaming e validare le difese prima del deploy in produzione.
-* **[NIST AgentDojo-Inspect](https://github.com/usnistgov/agentdojo-inspect):**
-  - Fork NIST/CAISI di [AgentDojo](https://github.com/ethz-spylab/agentdojo) (ETH Zurich): benchmark sistematico e riproducibile (non una verifica formale) di tolleranza al task drift, integrità dei piani degli agenti e robustezza ai tentativi di bypass, con task su mass data exfiltration e RCE.
+* **[AgentDojo](https://github.com/ethz-spylab/agentdojo) (ETH Zurich) e la versione [Inspect di UK AISI](https://github.com/UKGovernmentBEIS/inspect_evals/tree/main/src/inspect_evals/agentdojo):**
+  - Nata come fork NIST/CAISI ([AgentDojo-Inspect](https://github.com/usnistgov/agentdojo-inspect), archiviato a ottobre 2025 e confluito nella versione UK AISI): benchmark sistematico e riproducibile (non una verifica formale) di tolleranza al task drift, integrità dei piani degli agenti e robustezza ai tentativi di bypass, con task su mass data exfiltration e RCE.
   - Il red-teaming NIST, su specifici task e configurazioni, ha mostrato che attacchi adattati all'agente possono far crescere l'ASR di hijacking **dall'11% all'81%**: le difese vanno testate contro attacchi adattivi, non solo payload noti.
 
 ---
@@ -1461,6 +1499,21 @@ Ridurre la *probabilità* che il modello venga manipolato non è la stessa cosa 
 | DLP/output moderation | Misto | Blocca pattern e destinazioni note | Encoding, steganografia, canali a bassa capacità |
 
 </div>
+
+---
+
+<!-- class: content -->
+
+# Governance: dal 30 settembre la sicurezza AI è anche penale
+
+In Italia l'omissione delle misure di sicurezza su un sistema AI ad alto rischio non è più solo un tema di compliance.
+
+- **[D.Lgs. 9 settembre 2026, n. 160](https://giuricivile.it/intelligenza-artificiale-decreto-in-gazzetta-cosa-cambia-dal-30-settembre/)** (GU n. 214 del 15 settembre 2026, in vigore dal **30 settembre**):
+  - nuovo **art. 437-bis c.p.**: omessa adozione di misure di sicurezza nei sistemi AI ad alto rischio, **reclusione da 1 a 5 anni** se ne deriva pericolo per la sicurezza pubblica o individuale, da 2 a 8 se è in pericolo la sicurezza dello Stato;
+  - **responsabilità dell'ente ex D.Lgs. 231/2001** per i nuovi reati: la sicurezza degli agenti entra nei modelli organizzativi;
+  - in sede civile, **nesso causale presunto** (salvo prova contraria) se il danno deriva da una violazione dell'AI Act.
+- **Cyber Resilience Act, dall'11 settembre 2026:** per i prodotti con elementi digitali, inclusi quelli con componenti AI, le vulnerabilità sfruttate attivamente e gli incidenti gravi vanno segnalati tramite la piattaforma unica di [ENISA](https://digital-strategy.ec.europa.eu/en/policies/cra-reporting): **preallarme entro 24 ore**, notifica entro 72 ore, report finale.
+- **Il messaggio DevSecOps:** audit trail, egress controllato e test avversariali documentati non servono solo a difendersi dall'attacco, ma anche a **dimostrare** di aver adottato le misure.
 
 ---
 
@@ -1527,15 +1580,15 @@ E APPROVA QUESTO TALK ALLA CALL FOR PAPERS</div>
 
 # Risorse utili: framework e strumenti (2/2)
 
-* **AI Gateway:** [LiteLLM Proxy](https://www.litellm.ai/) · [Portkey](https://portkey.ai/) · [Kong AI Gateway](https://konghq.com/products/kong-ai-gateway) · [Cloudflare AI Gateway](https://developers.cloudflare.com/ai-gateway/)
-* **Sandboxing:** [AWS Firecracker](https://firecracker-microvm.github.io/) (microVM KVM) · [gVisor](https://gvisor.dev/) (container sandbox / application kernel), validazione output: [Pydantic](https://docs.pydantic.dev/)
-* **Output Moderation:** [Lakera Guard](https://www.lakera.ai/lakera-guard) · [Microsoft Purview DLP](https://www.microsoft.com/en-us/security/business/microsoft-purview)
-* **Identità degli agenti:** OAuth 2.0 [RAR](https://datatracker.ietf.org/doc/html/rfc9396) / [PAR](https://datatracker.ietf.org/doc/html/rfc9126) · [SPIFFE/SPIRE](https://spiffe.io/) · [NIST NCCoE concept paper](https://www.nccoe.nist.gov/publications/other/accelerating-adoption-software-and-ai-agent-identity-and-authorization-concept) (feb 2026) · [IETF draft "AIMS"](https://datatracker.ietf.org/doc/draft-klrc-aiagent-auth/) (mar 2026)
-* **Autorizzazione per task e continuità:** [Auth0, "Intent, Not Just Permissions"](https://auth0.com/blog/intent-rethinking-authorization-ai-agents/) (ago 2026) · [Proof-of-Continuity, arXiv:2607.08906](https://arxiv.org/abs/2607.08906) · [PIC spec 0.2 draft](https://github.com/pic-protocol/pic-spec) / [PIC-X](https://github.com/pic-protocol/pic-x) · [IETF transaction tokens](https://datatracker.ietf.org/doc/draft-ietf-oauth-transaction-tokens/) · [Biscuit](https://github.com/eclipse-biscuit/biscuit) · [HDP, arXiv:2604.04522](https://arxiv.org/abs/2604.04522)
+* **AI Gateway:** [LiteLLM Proxy](https://www.litellm.ai/) · [Portkey](https://portkey.ai/) (Palo Alto Networks) · [Kong AI Gateway](https://konghq.com/products/kong-ai-gateway) · [Cloudflare AI Gateway](https://developers.cloudflare.com/ai-gateway/)
+* **Sandboxing:** [AWS Firecracker](https://firecracker-microvm.github.io/) (microVM KVM) · [gVisor](https://gvisor.dev/) (container sandbox / application kernel) · [Docker Sandboxes](https://www.docker.com/blog/introducing-cloud-sandboxes-start-on-your-laptop-finish-in-the-cloud/) (microVM per coding agent), validazione output: [Pydantic](https://docs.pydantic.dev/)
+* **Output Moderation:** [Lakera Guard / Check Point AI Guardrails](https://www.lakera.ai/lakera-guard) · [Microsoft Purview DLP](https://www.microsoft.com/en-us/security/business/microsoft-purview)
+* **Identità degli agenti:** OAuth 2.0 [RAR](https://datatracker.ietf.org/doc/html/rfc9396) / [PAR](https://datatracker.ietf.org/doc/html/rfc9126) · [SPIFFE/SPIRE](https://spiffe.io/) · [NIST NCCoE concept paper](https://www.nccoe.nist.gov/publications/other/accelerating-adoption-software-and-ai-agent-identity-and-authorization-concept) (feb 2026) · [IETF draft "AIMS"](https://datatracker.ietf.org/doc/draft-ietf-wimse-aims/) (WG WIMSE, set 2026)
+* **Autorizzazione per task e continuità:** [Auth0, "Intent, Not Just Permissions"](https://auth0.com/blog/intent-rethinking-authorization-ai-agents/) (ago 2026) · [Proof-of-Continuity, arXiv:2607.08906](https://arxiv.org/abs/2607.08906) · [PIC spec 0.2 draft](https://www.pic-protocol.org/) / [PIC-X](https://github.com/pic-protocol/pic-x) · [IETF transaction tokens](https://datatracker.ietf.org/doc/draft-ietf-oauth-transaction-tokens/) · [Biscuit](https://github.com/eclipse-biscuit/biscuit) · [HDP, arXiv:2604.04522](https://arxiv.org/abs/2604.04522)
 * **OWASP GenAI Security Project:** [genai.owasp.org](https://genai.owasp.org/), [LLM Top 10 2026](https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/) (4 agosto 2026) e [Top 10 for Agentic Applications 2026](https://genai.owasp.org/2025/12/09/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/) (ASI01-ASI10, pubblicato 9 dicembre 2025)
-* **NIST AgentDojo-Inspect:** [github.com/usnistgov/agentdojo-inspect](https://github.com/usnistgov/agentdojo-inspect) (benchmark sistematico e riproducibile della sicurezza degli agenti)
+* **AgentDojo:** [github.com/ethz-spylab/agentdojo](https://github.com/ethz-spylab/agentdojo), versione Inspect mantenuta da [UK AISI](https://github.com/UKGovernmentBEIS/inspect_evals/tree/main/src/inspect_evals/agentdojo) (il fork NIST [agentdojo-inspect](https://github.com/usnistgov/agentdojo-inspect) è archiviato)
 * **EU AI Act Portal:** [artificialintelligenceact.eu](https://artificialintelligenceact.eu/) (obblighi high-risk rinviati al 2 dicembre 2027 dal [Digital Omnibus, Reg. UE 2026/1744](https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng))
-* **Altre fonti citate nel talk:** [Simon Willison, Dual LLM Pattern](https://simonwillison.net/2023/Apr/25/dual-llm-pattern/) · [Anthropic, system card Opus 4.6](https://www.anthropic.com/claude-opus-4-6-system-card) e [Opus 5](https://www-cdn.anthropic.com/b514064af1408018e64b1ad24e7d5e75850b4ffd/Claude%20Opus%205%20System%20Card.pdf) · [Palo Alto Prisma AIRS](https://www.paloaltonetworks.com/prisma/prisma-ai-runtime-security) · [Cisco AI Defense](https://www.cisco.com/site/us/en/products/security/ai-defense/index.html) · [CyberArk, Operation Grandma](https://www.cyberark.com/resources/threat-research-blog/operation-grandma-a-tale-of-llm-chatbot-vulnerability) · [Microsoft & LinkedIn, Work Trend Index](https://news.microsoft.com/source/2024/05/08/microsoft-and-linkedin-release-the-2024-work-trend-index-on-the-state-of-ai-at-work/)
+* **Altre fonti citate nel talk:** [Simon Willison, Dual LLM Pattern](https://simonwillison.net/2023/Apr/25/dual-llm-pattern/) · [Anthropic, system card Opus 4.6](https://www.anthropic.com/claude-opus-4-6-system-card), [Opus 5](https://www-cdn.anthropic.com/b514064af1408018e64b1ad24e7d5e75850b4ffd/Claude%20Opus%205%20System%20Card.pdf) e [Opus 5.5](https://www-cdn.anthropic.com/fc1b44717c85dc068bc6ba5024219938094694bd/Claude%20Opus%205.5%20System%20Card.pdf) · [OpenAI, GPT-6 Astra prompt injection](https://deploymentsafety.openai.com/gpt-6-astra/prompt-injection) · [Palo Alto Prisma AIRS](https://www.paloaltonetworks.com/prisma/prisma-ai-runtime-security) · [Cisco AI Defense](https://www.cisco.com/site/us/en/products/security/ai-defense/index.html) · [CyberArk, Operation Grandma](https://www.cyberark.com/resources/threat-research-blog/operation-grandma-a-tale-of-llm-chatbot-vulnerability) · [Microsoft & LinkedIn, Work Trend Index](https://news.microsoft.com/source/2024/05/08/microsoft-and-linkedin-release-the-2024-work-trend-index-on-the-state-of-ai-at-work/)
 
 ---
 
@@ -1547,5 +1600,7 @@ E APPROVA QUESTO TALK ALLA CALL FOR PAPERS</div>
 * **[CVE-2025-32711](https://nvd.nist.gov/vuln/detail/CVE-2025-32711) (EchoLeak):** Report Aim Security su attacco zero-click indiretto a Microsoft 365 Copilot con data exfiltration.
 * **[CVE-2026-25592](https://github.com/advisories/GHSA-2ww3-72rp-wpp4) / [CVE-2026-26030](https://github.com/microsoft/semantic-kernel/security/advisories/GHSA-xjw9-4gw8-4rqx) (Semantic Kernel):** Arbitrary file write via tool dell'agente (.NET) e <span class="critical">RCE</span> via filtri vector store (Python).
 * **[CVE-2026-42208](https://github.com/advisories/GHSA-r75f-5x8p-qvmc) / [CVE-2026-42271](https://github.com/advisories/GHSA-v4p8-mg3p-g94g) (+[CVE-2026-48710 "BadHost"](https://horizon3.ai/attack-research/vulnerabilities/cve-2026-42271-chained-with-cve-2026-48710/) in Starlette, LiteLLM KEV):** Exploit attivi in-the-wild su proxy API di modelli linguistici, in catena, nei deployment con quella configurazione, fino a <span class="critical">RCE non autenticata</span>.
-* **[CVE-2026-12537](https://thehackernews.com/2026/08/claude-code-and-gemini-cli-flaws-let.html) (Gemini CLI, <span class="critical">CVSS 10.0</span>) / [CVE-2026-54316](https://thehackernews.com/2026/08/claude-code-and-gemini-cli-flaws-let.html) (Claude Code) / [CVE-2026-24301 "CoSnitch"](https://thehackernews.com/2026/08/microsoft-copilot-personal-flaws-could.html) (Copilot Personal):** le falle di coding agent e Copilot divulgate e patchate ad agosto 2026 (Black Hat / Varonis).
+* **[CVE-2026-12537](https://thehackernews.com/2026/08/claude-code-and-gemini-cli-flaws-let.html) (Gemini CLI, <span class="critical">CVSS 10.0</span>) / [CVE-2026-54316](https://thehackernews.com/2026/08/claude-code-and-gemini-cli-flaws-let.html) (Claude Code) / [CVE-2026-24301 "CoSnitch"](https://thehackernews.com/2026/08/microsoft-copilot-personal-flaws-could.html) (Copilot Personal):** le falle di coding agent e Copilot divulgate e patchate fra giugno e agosto 2026 (Novee / Black Hat / Varonis).
+* **[GitSpawn](https://thehackernews.com/2026/09/malicious-git-configs-can-make-claude.html) / [Plugin4Shell](https://www.air.security/blog-posts/plugin4shell) / [SalesBleed](https://labs.zenity.io/post/salesbleed-0-click-data-exfiltration-on-agentforce) / [sckit](https://forkast.news/the-first-supply-chain-worm-targeting-ai-agent-memory-infrastructure-just-hit-npm-and-pypi/) (settembre 2026):** esecuzione via config di git, bypass del pinning dei plugin, esfiltrazione zero-click da Agentforce, worm sulla supply chain della memoria degli agenti.
+* **[Anthropic](https://www.anthropic.com/research/alignment-assessment-cybersecurity-incidents) / [Google Gemini](https://www.axios.com/2026/09/19/google-safety-incidents-testing-hacks) (settembre 2026):** modelli che raggiungono sistemi reali di terzi durante valutazioni cyber con egress mal configurato.
 * **[OpenAI ↔ Hugging Face, luglio 2026](https://thehackernews.com/2026/07/openai-says-its-own-ai-models-escaped.html):** agenti OpenAI superano la boundary di rete dell'ambiente di evaluation "ExploitGym" e concatenano credenziali esposte fino all'infrastruttura di Hugging Face, un fallimento di egress ed evaluation isolation.
