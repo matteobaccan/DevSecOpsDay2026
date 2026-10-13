@@ -82,6 +82,10 @@ style: |
     text-align: left;
     line-height: 1.32;
   }
+  ul:has(+ blockquote), ol:has(+ blockquote), p:has(+ blockquote) {
+    margin-bottom: 0.1em;
+  }
+
   li::marker {
     color: var(--ds-secondary);
     font-weight: 900;
@@ -150,8 +154,8 @@ style: |
     background: rgba(27, 54, 93, 0.05);
     border-left: 8px solid var(--ds-secondary);
     border-radius: 0;
-    margin: 1em 0;
-    padding: 0.82em 24px;
+    margin: 0.3em 0 0;
+    padding: 0.62em 24px;
     font-style: italic;
     color: var(--ds-dark);
     font-size: 0.95em;
@@ -989,7 +993,7 @@ Non le leggo una per una: dettagli, fonti e catene complete sono in appendice (*
 
 <!-- class: content -->
 
-# MCP e STDIO: una trust boundary facile da comporre in modo insicuro
+# MCP e STDIO: una trust boundary fragile
 
 Il protocollo che connette gli agenti ai tool è diventato la superficie d'attacco più sistemica del 2026.
 
