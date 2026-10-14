@@ -3,7 +3,7 @@ marp: true
 theme: default
 paginate: true
 header: ''
-footer: 'Matteo Baccan | DevSecOps Day 2026 · SIGNAL: SECURE - %date% - %time%'
+footer: 'Matteo Baccan | Oltre il chatbot · DevSecOps Day 2026 · github.com/matteobaccan/DevSecOpsDay2026 - %date% - %time%'
 style: |
   @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Share+Tech+Mono&display=swap');
 
