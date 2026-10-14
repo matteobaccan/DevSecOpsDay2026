@@ -218,7 +218,7 @@ style: |
   }
   footer {
     bottom: 19px;
-    left: 118px;
+    left: 86px;
     right: auto;
     color: var(--ds-muted);
     font-size: 13px;
@@ -239,8 +239,8 @@ style: |
     color: var(--ds-muted);
     position: absolute;
     bottom: 19px;
-    left: 34px;
-    right: auto;
+    left: auto;
+    right: 34px;
   }
 
   section.content::before {
