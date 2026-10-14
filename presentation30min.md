@@ -2,7 +2,7 @@
 marp: true
 theme: default
 paginate: true
-header: ''
+header: ' '
 footer: 'Matteo Baccan | Oltre il chatbot · DevSecOps Day 2026 · github.com/matteobaccan/DevSecOpsDay2026 - %date% - %time%'
 style: |
   @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Share+Tech+Mono&display=swap');
@@ -216,6 +216,43 @@ style: |
   header {
     display: none;
   }
+
+  @supports (width: calc(attr(data-marpit-pagination type(<number>), 0) * 1%)) {
+    section {
+      --dsod-progress: calc(
+        attr(data-marpit-pagination type(<number>), 0) /
+        attr(data-marpit-pagination-total type(<number>), 1) * 100%
+      );
+    }
+    header {
+      display: block;
+      position: absolute;
+      top: auto;
+      bottom: 0;
+      left: 0;
+      right: auto;
+      margin: 0;
+      padding: 0;
+      height: 4px;
+      width: var(--dsod-progress);
+      background: var(--ds-secondary);
+      font-size: 0;
+      line-height: 0;
+      overflow: hidden;
+      z-index: 20;
+    }
+    section.lead header {
+      background: rgba(255, 255, 255, 0.9);
+    }
+    section.section-title header,
+    section.dsod-cover header,
+    section.dsod-transition header,
+    section.dsod-final-name header,
+    section.dsod-final header,
+    section.wargames header {
+      display: none;
+    }
+  }
   footer {
     bottom: 19px;
     left: 86px;
@@ -306,9 +343,6 @@ style: |
   section.lead footer {
     display: block;
     color: #ffffff;
-  }
-  section.lead header {
-    display: none;
   }
 
   section.section-title footer,
