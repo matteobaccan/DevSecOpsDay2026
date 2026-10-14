@@ -218,7 +218,7 @@ style: |
   }
   footer {
     bottom: 19px;
-    left: 86px;
+    left: 118px;
     right: auto;
     color: var(--ds-muted);
     font-size: 13px;
@@ -233,6 +233,7 @@ style: |
   }
 
   section::after {
+    content: attr(data-marpit-pagination) ' / ' attr(data-marpit-pagination-total);
     font-size: 13px;
     font-weight: 900;
     color: var(--ds-muted);
