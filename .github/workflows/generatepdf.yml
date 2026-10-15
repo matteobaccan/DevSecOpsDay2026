@@ -19,8 +19,8 @@ jobs:
       run: |
         for deck in 'presentation.md' 'presentation30min.md'; do
           cp "$deck" "$deck.backup"
-          sed -i "s/%date%/$(date +'%Y-%m-%d')/g" "$deck"
-          sed -i "s/%time%/$(date +'%H:%M')/g" "$deck"
+          sed -i "s/%date%/$(date -u +'%Y-%m-%d')/g" "$deck"
+          sed -i "s/%time%/$(date -u +'%H:%M')/g" "$deck"
           npx @marp-team/marp-cli@latest "$deck" --pdf --allow-local-files --pdf-outlines --pdf-outlines.pages=false
           rm "$deck"
           mv "$deck.backup" "$deck"
