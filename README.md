@@ -6,42 +6,47 @@
 
 > **Platform Engineering, Gateways, Sandboxing e Sicurezza per Agenti LLM**
 
-Slide del Talk per **DevSecOps Day 2026**
+Talk di **Matteo Baccan** ([baccan.it](https://www.baccan.it)) al **[DevSecOps Day 2026](https://www.devsecopsday.it/)** — Hotel Savoia Regency, Bologna, 14 ottobre 2026.
 
-Speaker: **Matteo Baccan** — [baccan.it](https://www.baccan.it)
-
-## L'evento
-
-| | |
-| :--- | :--- |
-| **Evento** | [DevSecOps Day 2026](https://www.devsecopsday.it/) — 4ª edizione |
-| **Data** | 14 ottobre 2026 |
-| **Luogo** | Hotel Savoia Regency, Via del Pilastro 2 — Bologna |
-| **Organizzazione** | [GrUSP](https://www.grusp.org/) |
-
-Una giornata interamente dedicata alle pratiche e agli strumenti che rendono la sicurezza parte integrante del processo DevOps: CI/CD sicure, shift-left, policy-as-code, supply chain security, threat modeling, incident response e sicurezza dei sistemi AI.
+**[Slide in PDF](presentation.pdf)** · [Contenuti](#contenuti) · [Pattern e tecnologie](#pattern-e-tecnologie-trattati) · [Demo](#demo-dal-vivo) · [Risorse citate](#risorse-citate-e-approfondimenti) · [Il talk dal vivo](#il-talk-dal-vivo)
 
 ---
 
-> Gli LLM oggi non sono più entità statiche che rispondono a domande isolate: si stanno evolvendo in agenti autonomi in grado di pianificare ed eseguire azioni nel sistema ospite, connettendosi ad API, e-mail, database e ambienti di esecuzione codice. Questa evoluzione espande drasticamente la superficie d'attacco aziendale. La Prompt Injection (diretta, indiretta o persistente come il Memory Poisoning) è una minaccia di tipo semantico che non può essere risolta solo tramite filtri sul testo o allineamento dei modelli (RLHF). In questo talk analizzeremo le contromisure architetturali deterministiche e infrastrutturali: design pattern sicuri, il framework CaMeL (Google DeepMind / ETH Zurich) per l'Information Flow Control, il microVM sandboxing del codice generato, la gestione del least privilege a runtime (OAuth 2.0/Workload Identity) e pipeline di red-teaming continuo (PyRIT, AgentDojo).
+## Il problema
 
-## Di cosa parla
+> Gli LLM oggi non sono più entità statiche che rispondono a domande isolate: si stanno evolvendo in agenti autonomi in grado di pianificare ed eseguire azioni nel sistema ospite, connettendosi ad API, e-mail, database e ambienti di esecuzione codice. Questa evoluzione espande drasticamente la superficie d'attacco aziendale. La Prompt Injection (diretta, indiretta o persistente come il Memory Poisoning) è una minaccia di tipo semantico che non può essere risolta solo tramite filtri sul testo o allineamento dei modelli (RLHF). In questo talk analizzeremo le contromisure architetturali deterministiche e infrastrutturali: design pattern sicuri, il framework CaMeL (Google DeepMind / ETH Zurich) per l'Information Flow Control, il microVM sandboxing del codice generato, la gestione del least privilege a runtime (OAuth 2.0/Workload Identity) e pipeline di red-teaming continuo (PyRIT, AgentDojo).
 
 Una presentazione tecnica per sviluppatori, System Architects, Security Engineer e team DevSecOps su come progettare e proteggere sistemi complessi basati su agenti LLM a livello di piattaforma e infrastruttura IT.
 
-Le slide sono disponibili in due versioni, entrambe in formato sorgente **Marp** con export PDF generato automaticamente dalla CI:
+## Le slide
+
+Due versioni, entrambe in formato sorgente **Marp** con export PDF generato automaticamente dalla CI:
 
 | Versione | Sorgente | PDF | Note |
 | :--- | :--- | :--- | :--- |
 | **Integrale** | [presentation.md](presentation.md) | [presentation.pdf](presentation.pdf) | tutti i contenuti, casi reali e approfondimenti — pensata per la lettura dopo il talk |
 | **Talk (~30 min)** | [presentation30min.md](presentation30min.md) | [presentation30min.pdf](presentation30min.pdf) | il taglio per lo speech dal vivo: stesso filo narrativo, CVE riassunte in una pagina e pattern condensati |
 
-Nella cartella [demo/](demo/README.md) trovi le **demo dal vivo** che accompagnano la sezione di hardening del talk:
-1. **AI Gateway** — un proxy centrale (LiteLLM) davanti a Claude, con virtual key, rate-limit e guardrail.
-2. **Prompt Shields** — un classificatore locale (Meta PromptGuard 2) che assegna uno score di jailbreak a un prompt benigno vs uno ostile.
-3. **Output Moderation** — blocco di un output che tenta di esfiltrare un segreto (AWS key / SSN), riusando lo stesso proxy della demo 1.
+<details>
+<summary><b>Come visualizzarle ed esportarle in locale</b></summary>
 
-## Agenda
+Le slide sono scritte in formato [Marp](https://marp.app/):
+
+```bash
+# Esegui con Marp CLI per generare l'HTML o il PDF
+# (versione integrale: presentation.md — versione talk da 30 minuti: presentation30min.md)
+npx @marp-team/marp-cli presentation.md --html
+npx @marp-team/marp-cli presentation.md --pdf
+
+# Oppure usa l'estensione VS Code
+# Installa "Marp for VS Code" e clicca sull'icona di anteprima in alto a destra
+```
+
+</details>
+
+## Contenuti
+
+I cinque capitoli del talk, ognuno con i casi reali, le CVE e i paper che lo sostengono:
 
 1. **La nuova superficie d'attacco** — Dagli LLM statici agli agenti autonomi: Shadow AI/BYOAI, l'evoluzione della prompt injection (Direct → Indirect → Worm AI e Memory Poisoning con MINJA & AgentPoison), i worm in-the-wild del 2026 (SANDWORM_MODE, Miasma), l'AI recommendation poisoning e casi reali come la campagna "Contagious Interview" via `tasks.json` di VS Code — inclusa l'indirect injection usata *in difesa*: la trappola anti-cheating di un docente della Alcorn State University (luglio 2026), un prompt in font bianco dentro il testo del compito, 32 studenti su 35 smascherati.
 2. **Il problema strutturale** — Sintassi vs dati nel Shared Context, il gap semantico e l'illusione delle patch soft (delimitatori, RLHF, "Grandma Exploit"); la gravità degli agenti con CVE reali: CVE-2024-5565 (Vanna.AI RCE), EchoLeak (CVE-2025-32711), Semantic Kernel (CVE-2026-25592 / CVE-2026-26030), LiteLLM KEV (CVE-2026-42208 / CVE-2026-42271 + "BadHost"), "Comment and Control" sui coding agent, le ricerche Black Hat 2026 ("PleaseFix", CoSnitch), il settembre 2026 in cui il payload diventa la *configurazione* (GitSpawn via `.git/config`, Plugin4Shell sui marketplace di plugin, SalesBleed su Salesforce Agentforce) e la crisi di sicurezza del protocollo MCP.
@@ -66,19 +71,12 @@ Nella cartella [demo/](demo/README.md) trovi le **demo dal vivo** che accompagna
 | **Microsoft PyRIT** | Testing / CI-CD | Framework open-source per red-teaming automatizzato di prompt injection. |
 | **NIST AgentDojo-Inspect** | Testing / Valutazione | Benchmark per la tolleranza al task drift e la robustezza degli agenti LLM contro attacchi adattivi. |
 
-## Come visualizzare le slide
+## Demo dal vivo
 
-Le slide sono scritte in formato [Marp](https://marp.app/). Per visualizzarle ed esportarle:
-
-```bash
-# Esegui con Marp CLI per generare l'HTML o il PDF
-# (versione integrale: presentation.md — versione talk da 30 minuti: presentation30min.md)
-npx @marp-team/marp-cli presentation.md --html
-npx @marp-team/marp-cli presentation.md --pdf
-
-# Oppure usa l'estensione VS Code
-# Installa "Marp for VS Code" e clicca sull'icona di anteprima in alto a destra
-```
+Nella cartella [demo/](demo/README.md) trovi le **demo dal vivo** che accompagnano la sezione di hardening del talk:
+1. **AI Gateway** — un proxy centrale (LiteLLM) davanti a Claude, con virtual key, rate-limit e guardrail.
+2. **Prompt Shields** — un classificatore locale (Meta PromptGuard 2) che assegna uno score di jailbreak a un prompt benigno vs uno ostile.
+3. **Output Moderation** — blocco di un output che tenta di esfiltrare un segreto (AWS key / SSN), riusando lo stesso proxy della demo 1.
 
 ## Risorse citate e approfondimenti
 
@@ -123,7 +121,43 @@ npx @marp-team/marp-cli presentation.md --pdf
 
 ---
 
+## L'evento
+
+| | |
+| :--- | :--- |
+| **Evento** | [DevSecOps Day 2026](https://www.devsecopsday.it/) — 4ª edizione |
+| **Data** | 14 ottobre 2026 |
+| **Luogo** | Hotel Savoia Regency, Via del Pilastro 2 — Bologna |
+| **Organizzazione** | [GrUSP](https://www.grusp.org/) |
+
+Una giornata interamente dedicata alle pratiche e agli strumenti che rendono la sicurezza parte integrante del processo DevOps: CI/CD sicure, shift-left, policy-as-code, supply chain security, threat modeling, incident response e sicurezza dei sistemi AI.
+
 ## Il talk dal vivo
+
+<p align="center">
+  <b>★★★★★</b><br />
+  <b>4,9 / 5</b><br />
+  <sub>media su <b>33 valutazioni</b> raccolte in sala</sub>
+</p>
+
+| Voto | Valutazioni | Distribuzione |
+| :--- | ---: | :--- |
+| ★★★★★ | 30 | `██████████████████` 91% |
+| ★★★★☆ | 3 | `██` 9% |
+
+Alcuni dei commenti lasciati:
+
+> «Matteo veramente bravissimo ad illustrare cose complesse in maniera semplice e chiara»
+>
+> «Tema molto molto interessante, grazie per gli spunti»
+>
+> «Talk molto interessante e presentato in maniera simpatica»
+>
+> «Ottimo relatore, tema molto importante»
+>
+> «Argomento interessante, presentato bene, ho preso diversi spunti validi da questo talk»
+
+Grazie a chi è venuto ad ascoltare, ha fatto domande e ha lasciato un voto.
 
 <p align="center">
   <img src="img/matteo-sul-palco.jpg" alt="Matteo Baccan sul palco del DevSecOps Day 2026" width="450" /><br />
@@ -134,6 +168,8 @@ npx @marp-team/marp-cli presentation.md --pdf
   <img src="img/foto-di-gruppo.jpg" alt="Foto di gruppo con lo staff del DevSecOps Day 2026" width="640" /><br />
   <sub><b>A fine giornata.</b> La foto di gruppo con lo staff e gli speaker in maglietta gialla GrUSP, attorno al leggio tappezzato di sticker delle community.</sub>
 </p>
+
+> **Hai partecipato al talk?** Se hai foto della giornata e vuoi condividerle, mandamele (apri una [issue](https://github.com/matteobaccan/DevSecOpsDay2026/issues) o scrivimi da [baccan.it](https://www.baccan.it)): le pubblico volentieri qui sul repository, con il credito a chi le ha scattate.
 
 ## Licenza
 
